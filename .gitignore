@@ -1,0 +1,12 @@
+app-back/__pycache__/
+app-back/.venv/
+app-back/.env
+*.pyc
+
+
+app-front/node_modules/
+app-front/.next/
+app-front/.env.local
+
+
+.DS_Store
