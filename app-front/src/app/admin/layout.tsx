@@ -18,6 +18,7 @@ export default function AdminLayout({
     const checkAuth = async () => {
       try {
         const res = await fetch(`${API}/htoya/`, {
+          method: "GET",
           credentials: "include",
           mode: "cors", 
         });
