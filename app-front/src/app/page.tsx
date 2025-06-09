@@ -1,5 +1,4 @@
 "use client";
-const API = process.env.NEXT_PUBLIC_API_URL;
 import React, { useState, useEffect } from "react";
 import DepartmentServiceCount from "@/components/DepartmentServiceCount";
 import ReviewsComponent from "@/components/ReviewsComponent";
@@ -12,7 +11,9 @@ import NewsCard from "@/components/NewsCard";
 import EventsCard from "@/components/EventsCard";
 import EventModal from "@/components/EventModal";
 import Header from "@/components/Header";
-
+import HeaderWrapper from "@/components/HeaderWrapper"
+import ScrollToTop from "@/components/ScrollToTop";
+const API = process.env.NEXT_PUBLIC_API_URL;
 interface NewsItem {
   news_id: number;
   news_photo: string;
@@ -119,6 +120,7 @@ export default function Home() {
   return (
     <div className="grid gap-6">
       {showHeader && <Header />}
+      <ScrollToTop />
       {/* Hero Section */}
       <div className="bg-[#22212C] relative z-0 max-h-[900px] min-h-[250px]">
         <div className="grid md:px-[15px] px-[10px] container mx-auto">
