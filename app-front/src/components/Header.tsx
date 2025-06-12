@@ -130,7 +130,10 @@ export default function Header() {
       const response = await fetch("/api/check-auth", {
         method: "GET",
         credentials: "include",
-        });
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
       const data = await response.json();
 
       if (data.authenticated) {

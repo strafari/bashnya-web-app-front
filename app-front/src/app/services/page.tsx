@@ -1,5 +1,4 @@
 "use client";
-export const dynamic = 'force-dynamic';
 import { useEffect, useState, useMemo } from "react";
 import useStore, { Service, PriceList, Department } from "../../store/useStore";
 import ServiceItem from "../../components/ServiceItem";
@@ -29,7 +28,7 @@ export default function ServicesPage() {
         .then((data: Department[]) => {
           setDepartments(data);
         })
-        .catch((err) => console.error("Ошибка при загрузке отделений:", err));
+        .catch((err) => console.error(err));
     }
   }, [departments, setDepartments]);
 
@@ -46,10 +45,10 @@ export default function ServicesPage() {
               .then((pl: PriceList[]) => {
                 setPriceListForService(service.id, pl);
               })
-              .catch((err) => console.error("Ошибка при загрузке прайс-листов:", err));
+              .catch((err) => console.error(err));
           });
         })
-        .catch((err) => console.error("Ошибка при загрузке услуг:", err));
+        .catch((err) => console.error(err));
     } else {
       services.forEach((service) => {
         if (!priceLists[service.id]) {
@@ -58,7 +57,7 @@ export default function ServicesPage() {
             .then((pl: PriceList[]) => {
               setPriceListForService(service.id, pl);
             })
-            .catch((err) => console.error("Ошибка при загрузке прайс-листов:", err));
+            .catch((err) => console.error(err));
         }
       });
     }

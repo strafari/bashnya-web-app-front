@@ -1,8 +1,9 @@
 "use client";
+const API = process.env.NEXT_PUBLIC_API_URL;
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-const API = process.env.NEXT_PUBLIC_API_URL;
+
 type Seat = {
   seat_id: number;
   seat_coworking_id: number;

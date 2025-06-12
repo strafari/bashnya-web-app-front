@@ -1,9 +1,10 @@
 "use client";
+const API = process.env.NEXT_PUBLIC_API_URL;
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Modal from "@/components/EditModal"; // Ensure you have this Modal component
-const API = process.env.NEXT_PUBLIC_API_URL;
+
 type NewsItem = {
   news_id: number;
   news_photo: string;
@@ -174,10 +175,10 @@ export default function NewsList() {
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {truncateText(item.news_title, 20)}
+                    {truncateText(item.news_title, 25)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {truncateText(item.news_text, 20)}
+                    {truncateText(item.news_text, 25)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {item.news_date}

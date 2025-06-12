@@ -19,13 +19,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const [error, setError] = useState<string>("");
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
   const router = useRouter();
+  const { setToken } = useStore();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
   const handleCheckboxChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -34,59 +32,46 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    if (!isLogin && !isTermsAccepted) {
-      setError("You must accept the terms to register.");
-      return;
-    }
+    const url = isLogin ? `${API}/auth/jwt/login` : `${API}/auth/register`;
+    const body = isLogin
+      ? new URLSearchParams({
+          username: formData.email,
+          password: formData.password,
+          grant_type: "password",
+        }).toString()
+      : JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          user_name: formData.user_name,
+        });
 
     try {
-      if (isLogin) {
-        // Use the updated API
-        const response = await fetch("/api/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: formData.email,
-            password: formData.password,
-          }),
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": isLogin ? "application/x-www-form-urlencoded" : "application/json",
+        },
+        credentials: "include",
+        body,
+      });
+
+      if (response.ok || response.status === 204) {
+        // После успешной авторизации проверяем пользователя
+        const checkResponse = await fetch(`${API}/htoya/`, {
+          credentials: "include",
         });
-
-        if (response.ok) {
-          const data = await response.json();
-          if (data.token) {
-            // Set token in Zustand store
-            useStore.getState().setToken(data.token);
-          }
-
-          onClose();
-          router.push("/profile");
-        } else {
-          const data = await response.json();
-          setError(data.detail || "Login failed");
+        if (checkResponse.ok) {
+          const userData = await checkResponse.json();
+          setToken("AUTHENTICATED"); // Устанавливаем токен в Zustand
         }
+        onClose();
+        router.refresh();
       } else {
-        // Registration logic remains the same
-        const response = await fetch(`${API}/auth/register`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        });
-
-        if (response.ok) {
-          setIsLogin(true);
-          setError("");
-        } else {
-          const data = await response.json();
-          setError(data.detail || "Registration failed");
-        }
+        const errorData = await response.json();
+        setError(errorData.detail || (isLogin ? "Ошибка входа" : "Ошибка регистрации"));
       }
     } catch (error) {
-      setError("An error occurred");
+      setError("Ошибка сети");
     }
   };
 
@@ -110,11 +95,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       >
         <div className="flex justify-between items-center gap-4">
           <div></div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="h-12 bg-[#1B1B1B] transition-background duration-500 hover:scale-[1.08] rounded-full text-white flex items-center justify-center"
-          >
+          <button onClick={onClose} className="h-12 bg-[#1B1B1B] rounded-full text-white">
             Готово
           </button>
         </div>
@@ -124,43 +105,37 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
         {error && <p className="text-red-500 mb-4">{error}</p>}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-white">
-              Почта
-            </label>
+            <label className="block text-sm font-medium text-white">Почта</label>
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
               required
             />
           </div>
           {!isLogin && (
             <div className="mb-4">
-              <label className="block text-sm font-medium text-white">
-                Имя
-              </label>
+              <label className="block text-sm font-medium text-white">Имя</label>
               <input
                 type="text"
                 name="user_name"
                 value={formData.user_name}
                 onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
                 required
               />
             </div>
           )}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-white">
-              Пароль
-            </label>
+            <label className="block text-sm font-medium text-white">Пароль</label>
             <input
               type="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
               required
             />
           </div>
@@ -174,28 +149,23 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 className="mr-2"
                 required
               />
-              <label
-                htmlFor="terms"
-                className="text-[10px] leading-[105%] text-white"
-              >
+              <label htmlFor="terms" className="text-[10px] text-white">
                 Я ознакомлен с политикой обработки персональных данных
               </label>
             </div>
           )}
           <button
             type="submit"
-            className="h-10 mx-auto flex bg-[#FF4392] text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            className="h-10 mx-auto flex bg-[#FF4392] text-white py-2 px-4 rounded-md"
           >
             {isLogin ? "Войти" : "Регистрация"}
           </button>
         </form>
         <button
           onClick={() => setIsLogin(!isLogin)}
-          className="mt-4 mx-auto flex bg-white text-black py-2 px-4 rounded-md hover:bg-gray-300 focus:outline-none leading-[110%] focus:ring-offset-2 font-[400]"
+          className="mt-4 mx-auto flex bg-white text-black py-2 px-4 rounded-md"
         >
-          {isLogin
-            ? "Нет аккаунта? Зарегистрируйтесь"
-            : "Уже есть аккаунт? Авторизуйтесь"}
+          {isLogin ? "Нет аккаунта? Зарегистрируйтесь" : "Уже есть аккаунт? Авторизуйтесь"}
         </button>
       </motion.div>
     </motion.div>

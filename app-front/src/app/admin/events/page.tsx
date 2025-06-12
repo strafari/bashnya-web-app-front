@@ -1,10 +1,11 @@
 "use client";
+const API = process.env.NEXT_PUBLIC_API_URL;
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { format, parseISO } from "date-fns";
 import Modal from "@/components/EditModal";
-const API = process.env.NEXT_PUBLIC_API_URL;
+
 type Event = {
   event_id: number;
   event_name: string;
@@ -177,10 +178,14 @@ export default function EventList() {
                     {event.event_id}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {event.event_name}
+                    {event.event_name.length > 25 
+                      ? `${event.event_name.slice(0, 25)}...`
+                      : event.event_name}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {event.event_description || "-"}
+                    {event.event_description 
+                      ? `${event.event_description.slice(0, 25)}${event.event_description.length > 25 ? '...' : ''}`
+                      : "-"}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {format(

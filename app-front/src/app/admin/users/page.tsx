@@ -1,8 +1,9 @@
 "use client";
+const API = process.env.NEXT_PUBLIC_API_URL;
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-const API = process.env.NEXT_PUBLIC_API_URL;
+
 type User = {
   id: number;
   user_name: string;

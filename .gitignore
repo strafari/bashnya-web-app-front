@@ -7,6 +7,6 @@ app-back/.env
 app-front/node_modules/
 app-front/.next/
 app-front/.env.local
-
+app-front/.env.
 
 .DS_Store

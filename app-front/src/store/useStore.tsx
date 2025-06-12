@@ -59,6 +59,12 @@ export interface Specialist {
   department_id: number;
 }
 
+export interface Coworking {
+  coworking_id: number;
+  coworking_location: string;
+  coworking_description?: string;
+}
+
 export interface AppState {
   token: string | null;
   setToken: (token: string | null) => void;
@@ -81,6 +87,8 @@ export interface AppState {
   priceLists: { [serviceId: number]: PriceList[] };
   setPriceLists: (priceLists: { [serviceId: number]: PriceList[] }) => void;
   setPriceListForService: (serviceId: number, priceList: PriceList[]) => void;
+  coworkings: Coworking[] | null;
+  setCoworkings: (coworkings: Coworking[]) => void;
 }
 
 const useStore = create<AppState>()(
@@ -116,6 +124,8 @@ const useStore = create<AppState>()(
             [serviceId]: priceList,
           },
         })),
+      coworkings: null,
+      setCoworkings: (coworkings: Coworking[]) => set({ coworkings }),
     }),
     {
       name: "app-storage",

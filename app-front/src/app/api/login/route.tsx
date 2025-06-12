@@ -7,52 +7,39 @@ export async function POST(req: NextRequest) {
   const formData = new URLSearchParams();
   formData.append("username", email);
   formData.append("password", password);
+  // Добавить grant_type
+  formData.append("grant_type", "password");
 
   const response = await fetch(`${API}/auth/jwt/login`, {
     method: "POST",
-    mode: "cors", 
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
     },
-    credentials: "include",
+    credentials: "include",  // Важно для кук
     body: formData.toString(),
   });
 
-  let data: any = {};
-
-  // Parse cookies from response
-  const setCookie = response.headers.get("set-cookie");
-  let token = null;
-
-  if (setCookie) {
-    // Extract token from cookie (this is a simple extraction, adjust as needed)
-    const match = setCookie.match(/bonds=([^;]+)/);
-    if (match) {
-      token = match[1];
+  // Обработка 204 No Content
+  if (response.status === 204) {
+    const cookies = response.headers.get("set-cookie");
+    const res = NextResponse.json(
+      { message: "Login successful" },
+      { status: 200 }
+    );
+    if (cookies) {
+      res.headers.set("set-cookie", cookies);
     }
+    return res;
   }
 
-  // If status not 204, try to parse JSON
-  if (response.status !== 204) {
-    try {
-      data = await response.json();
-    } catch (error) {
-      console.error("Error parsing JSON:", error);
-      data = {};
-    }
-  } else {
-    // If status 204 - return success message and token
-    data = { message: "Login successful", token };
+  // Обработка ошибок
+  try {
+    const data = await response.json();
+    return NextResponse.json(data, { status: response.status });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Login failed" },
+      { status: 500 }
+    );
   }
-
-  // Change status to 200 to send response body
-  const status = response.status === 204 ? 200 : response.status;
-  const res = NextResponse.json({ ...data, token }, { status });
-
-  // Forward set-cookie header if present
-  if (setCookie) {
-    res.headers.set("set-cookie", setCookie);
-  }
-
-  return res;
 }

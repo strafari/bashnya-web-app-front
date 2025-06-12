@@ -1,9 +1,10 @@
 "use client";
+const API = process.env.NEXT_PUBLIC_API_URL;
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Modal from "@/components/EditModal"; // Ensure you have this Modal component
-const API = process.env.NEXT_PUBLIC_API_URL;
+
 type Coworking = {
   coworking_id: number;
   coworking_location: string;

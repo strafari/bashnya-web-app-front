@@ -1,24 +1,27 @@
 "use client";
+const API = process.env.NEXT_PUBLIC_API_URL;
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
-const API = process.env.NEXT_PUBLIC_API_URL;
+
 export default function CreateEvent() {
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     event_name: "",
     event_description: "",
     event_date_time: null as Date | null,
     event_location: "",
     event_max_seats: "",
-    event_photo: null as File | null,
     event_host: "",
     event_price: "",
   });
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>("");
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -42,29 +45,38 @@ export default function CreateEvent() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
     try {
-      const payload = new FormData();
-      payload.append("event_name", formData.event_name);
-      payload.append("event_description", formData.event_description);
-      payload.append("event_date_time", formatDateForAPI(formData.event_date_time));
-      payload.append("event_location", formData.event_location);
-      payload.append("event_max_seats", String(formData.event_max_seats));
-      payload.append("event_host", formData.event_host);
-      payload.append("event_price", formData.event_price);
- // файл
-      if (formData.event_photo instanceof File) {
-          payload.append("photo", formData.event_photo);
- }
+      const submitData = new FormData();
+      submitData.append("event_name", formData.event_name);
+      submitData.append("event_description", formData.event_description);
+      submitData.append("event_date_time", formatDateForAPI(formData.event_date_time));
+      submitData.append("event_location", formData.event_location);
+      submitData.append("event_max_seats", formData.event_max_seats);
+      submitData.append("event_host", formData.event_host);
+      submitData.append("event_price", formData.event_price);
+      
+      if (selectedFile) {
+        submitData.append("photo", selectedFile);
+      }
 
-    const response = await fetch(`${API}/events/`, {
-      method: "POST",
-      credentials: "include",
-      body: payload,  // Браузер сам подставит правильный Content-Type
+      const response = await fetch(`${API}/events/`, {
+        method: "POST",
+        credentials: "include",
+        body: submitData,
       });
 
       if (!response.ok) {
@@ -192,24 +204,32 @@ export default function CreateEvent() {
           />
         </div>
         <div className="mb-4">
-          <label
-            htmlFor="event_photo"
-            className="block text-gray-700 text-sm font-bold mb-2"
-          >
+          <label className="block text-gray-700 text-sm font-bold mb-2">
             Фото
           </label>
           <input
             type="file"
-            id="event_photo"
-            name="photo"
-            onChange={e =>
-            setFormData(prev => ({
-            ...prev,
-            event_photo: e.target.files ? e.target.files[0] : null
-            }))
-   }
-   required
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            accept="image/*"
+            className="hidden"
           />
+          <div className="flex flex-col items-center gap-4">
+            {previewUrl && (
+              <img
+                src={previewUrl}
+                alt="Предпросмотр"
+                className="max-w-[300px] max-h-[300px] object-contain"
+              />
+            )}
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="bg-[#303030] rounded-[24px] hover:bg-[#575757] text-white font-bold py-2 px-4 transition"
+            >
+              Выбрать фото
+            </button>
+          </div>
         </div>
         <div className="mb-4">
           <label

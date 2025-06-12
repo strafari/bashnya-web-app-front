@@ -1,4 +1,5 @@
 "use client";
+const API = process.env.NEXT_PUBLIC_API_URL;
 
 import { useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
@@ -10,7 +11,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { registerLocale } from "react-datepicker";
 import { ru } from "date-fns/locale/ru";
-const API = process.env.NEXT_PUBLIC_API_URL;
+
 registerLocale("ru", ru);
 
 interface EventItem {

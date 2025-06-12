@@ -1,17 +1,19 @@
 "use client";
-
-import { useState } from "react";
+const API = process.env.NEXT_PUBLIC_API_URL;
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-const API = process.env.NEXT_PUBLIC_API_URL;
+
 export default function CreateNews() {
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
-    news_photo: null as File | null,
     news_title: "",
     news_text: "",
     news_date: new Date().toISOString().split("T")[0],
   });
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>("");
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -23,27 +25,12 @@ export default function CreateNews() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleDrop = async (acceptedFiles: File[]) => {
-    const file = acceptedFiles[0];
-    if (!file) return;
-
-    const imageData = new FormData();
-    imageData.append("file", file);
-
-    try {
-      const response = await fetch(`${API}/upload/`, {
-        method: "POST",
-        body: imageData,
-      });
-
-      if (!response.ok) {
-        throw new Error("Ошибка загрузки изображения");
-      }
-
-      const data = await response.json();
-      setFormData((prev) => ({ ...prev, news_image: data.url }));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Произошла ошибка");
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
     }
   };
 
@@ -53,18 +40,19 @@ export default function CreateNews() {
     setError(null);
 
     try {
-      const payload = new FormData();
-    payload.append("news_title", formData.news_title);
-    payload.append("news_text", formData.news_text);
-    payload.append("news_date", formData.news_date);
-    if (formData.news_photo instanceof File) {
-    payload.append("photo", formData.news_photo);
-    }
+      const submitData = new FormData();
+      submitData.append("news_title", formData.news_title);
+      submitData.append("news_text", formData.news_text);
+      submitData.append("news_date", formData.news_date);
+      
+      if (selectedFile) {
+        submitData.append("photo", selectedFile);
+      }
 
-    const response = await fetch(`${API}/news/`, {
-      method: "POST",
-      credentials: "include",
-      body: payload,
+      const response = await fetch(`${API}/news/`, {
+        method: "POST",
+        credentials: "include",
+        body: submitData,
       });
 
       if (!response.ok) {
@@ -103,16 +91,28 @@ export default function CreateNews() {
             Изображение
           </label>
           <input
-             type="file"
-   name="photo"
-   onChange={e =>
-     setFormData(prev => ({
-       ...prev,
-       news_photo: e.target.files ? e.target.files[0] : null
-     }))
-   }
-   required
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            accept="image/*"
+            className="hidden"
           />
+          <div className="flex flex-col items-center gap-4">
+            {previewUrl && (
+              <img
+                src={previewUrl}
+                alt="Предпросмотр"
+                className="max-w-[300px] max-h-[300px] object-contain"
+              />
+            )}
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="bg-[#303030] rounded-[24px] hover:bg-[#575757] text-white font-bold py-2 px-4 transition"
+            >
+              Выбрать фото
+            </button>
+          </div>
         </div>
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2">

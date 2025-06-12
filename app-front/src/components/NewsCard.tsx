@@ -1,6 +1,5 @@
 import React from "react";
 import Link from "next/link";
-const API = process.env.NEXT_PUBLIC_API_URL;
 
 interface NewsCardProps {
   news_id: number;
@@ -18,7 +17,7 @@ const NewsCard = ({
   news_date,
 }: NewsCardProps) => {
   return (
-    <Link href={`${API}/news/${news_id}`}>
+    <Link href={`/news/${news_id}`}>
       <div className="transition-all duration-500 hover:scale-[1.02]">
         <div className="bg-[#303030] rounded-[40px] h-[300px] relative mb-6">
           {news_photo && (

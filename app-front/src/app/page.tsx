@@ -11,7 +11,7 @@ import NewsCard from "@/components/NewsCard";
 import EventsCard from "@/components/EventsCard";
 import EventModal from "@/components/EventModal";
 import Header from "@/components/Header";
-import HeaderWrapper from "@/components/HeaderWrapper"
+// import HeaderWrapper from "@/components/HeaderWrapper"
 import ScrollToTop from "@/components/ScrollToTop";
 const API = process.env.NEXT_PUBLIC_API_URL;
 interface NewsItem {
@@ -79,15 +79,23 @@ export default function Home() {
     const fetchLatestNews = async () => {
       try {
         const response = await fetch(
-          `${API}/news?limit=3&sort=latest`
+          `${API}/news`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+          }
         );
         if (!response.ok) {
-          throw new Error("Failed to fetch news");
+          throw new Error(`Failed to fetch news: ${response.status} ${response.statusText}`);
         }
         const data = await response.json();
         setLatestNews(data);
       } catch (error) {
         console.error("Error fetching news:", error);
+        setLatestNews([]); // Устанавливаем пустой массив в случае ошибки
       }
     };
 

@@ -25,7 +25,7 @@ const EventsCard: React.FC<EventsCardProps> = ({ event, onClick }) => {
       onClick={onClick}
       className="cursor-pointer transition-all duration-500 hover:scale-[1.02]"
     >
-      <div className="bg-[#303030] rounded-[40px] md:px-10 px-4 py-4 md:py-10 md:h-[280px] h-[180px] gap-4  grid grid-cols-2 relative">
+      <div className="bg-[#303030] rounded-[40px] md:px-10 px-4 py-4 md:py-6 md:h-[300px] h-[280px] gap-4  grid grid-cols-2 relative">
         <div className="bg-[#fff] rounded-[32px] overflow-hidden">
           {event.event_photo && (
             <img
@@ -38,15 +38,21 @@ const EventsCard: React.FC<EventsCardProps> = ({ event, onClick }) => {
         </div>
         <div className="text-white flex flex-col justify-between">
           <div>
-            <p className="font-[600] md:text-[28px] text-[14px] md:mb-4 mb-2">{event.event_name}</p>
-            <p className="font-[500] md:text-[14px] text-[10px] md:mb-1 text-[#C1C1C1] md:leading-[17px]">
-              {event.event_description}
+            <p className="font-[600] md:text-[20px] text-[14px] leading-[17px] md:leading-[23px] md:mb-4 mb-2">{event.event_name.length > 32
+                ? `${event.event_name.substring(0, 32)}...` 
+                : event.event_name}</p>
+            <p className="font-[500] md:text-[14px] text-[10px] md:mb-2 text-[#C1C1C1] md:leading-[17px]">
+              {event.event_description.length > 50 
+                ? `${event.event_description.substring(0, 50)}...` 
+                : event.event_description}
             </p>
-            <p className="font-[500] md:text-[14px] text-[10px] md:mb-1 text-[#C1C1C1] md:leading-[17px]">
+            <p className="font-[500] md:text-[14px] text-[10px] md:mb-2 text-[#C1C1C1] md:leading-[17px]">
               {new Date(event.event_date_time).toLocaleString()}
             </p>
             <p className="font-[500] md:text-[14px] text-[10px] text-[#C1C1C1] md:leading-[17px]">
-              {event.event_location}
+            {event.event_location.length > 30 
+                ? `${event.event_location.substring(0, 30)}...` 
+                : event.event_location}
             </p>
           </div>
           <div>

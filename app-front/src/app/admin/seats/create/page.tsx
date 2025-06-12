@@ -1,10 +1,10 @@
 "use client";
-export const dynamic = 'force-dynamic';
+const API = process.env.NEXT_PUBLIC_API_URL;
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-const API = process.env.NEXT_PUBLIC_API_URL;
+
 export default function CreateSeat() {
   const router = useRouter();
   const [formData, setFormData] = useState({
