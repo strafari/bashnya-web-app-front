@@ -1,5 +1,4 @@
 "use client";
-const API = process.env.NEXT_PUBLIC_API_URL;
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -7,7 +6,7 @@ import Link from "next/link";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
-
+const API = process.env.NEXT_PUBLIC_API_URL;
 export default function CreateEvent() {
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -16,7 +15,7 @@ export default function CreateEvent() {
     event_date_time: null as Date | null,
     event_location: "",
     event_max_seats: "",
-    event_photo: "",
+    event_photo: null as File | null,
     event_host: "",
     event_price: "",
   });
@@ -49,20 +48,23 @@ export default function CreateEvent() {
     setError(null);
 
     try {
-      const response = await fetch(`${API}/events/`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          event_name: formData.event_name,
-          event_description: formData.event_description,
-          event_date_time: formatDateForAPI(formData.event_date_time),
-          event_location: formData.event_location,
-          event_max_seats: Number(formData.event_max_seats),
-          event_photo: formData.event_photo,
-          event_host: formData.event_host,
-          event_price: formData.event_price,
-        }),
+      const payload = new FormData();
+      payload.append("event_name", formData.event_name);
+      payload.append("event_description", formData.event_description);
+      payload.append("event_date_time", formatDateForAPI(formData.event_date_time));
+      payload.append("event_location", formData.event_location);
+      payload.append("event_max_seats", String(formData.event_max_seats));
+      payload.append("event_host", formData.event_host);
+      payload.append("event_price", formData.event_price);
+ // файл
+      if (formData.event_photo instanceof File) {
+          payload.append("photo", formData.event_photo);
+ }
+
+    const response = await fetch(`${API}/events/`, {
+      method: "POST",
+      credentials: "include",
+      body: payload,  // Браузер сам подставит правильный Content-Type
       });
 
       if (!response.ok) {
@@ -197,12 +199,16 @@ export default function CreateEvent() {
             Фото
           </label>
           <input
-            type="text"
+            type="file"
             id="event_photo"
-            name="event_photo"
-            value={formData.event_photo}
-            onChange={handleChange}
-            className="shadow appearance-none border rounded w-full py-2 px-3"
+            name="photo"
+            onChange={e =>
+            setFormData(prev => ({
+            ...prev,
+            event_photo: e.target.files ? e.target.files[0] : null
+            }))
+   }
+   required
           />
         </div>
         <div className="mb-4">

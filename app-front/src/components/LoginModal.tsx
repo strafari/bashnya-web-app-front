@@ -2,7 +2,6 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 const API = process.env.NEXT_PUBLIC_API_URL;
-
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -31,15 +30,15 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
       formDataEncoded.append("username", formData.email);
       formDataEncoded.append("password", formData.password);
 
-      const response = await fetch(`${API}/auth/jwt/login`, {
+      const response = await fetch("/api/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        credentials: "include",
-        body: formDataEncoded.toString(),
+        credentials: "include",  
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+        email: formData.email,
+        password: formData.password,
+      }),
       });
-
       if (response.ok) {
         onClose();
         router.push("/profile");

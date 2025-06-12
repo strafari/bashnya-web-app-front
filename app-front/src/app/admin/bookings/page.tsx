@@ -1,9 +1,10 @@
 "use client";
-const API = process.env.NEXT_PUBLIC_API_URL;
+
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { format, parseISO } from "date-fns";
 import useStore from "@/store/useStore";
+const API = process.env.NEXT_PUBLIC_API_URL;
 
 type Booking = {
   booking_id: number;

@@ -1,12 +1,11 @@
 "use client";
-const API = process.env.NEXT_PUBLIC_API_URL;
 
 import { ReactNode, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import useStore from "../store/useStore";
-
+const API = process.env.NEXT_PUBLIC_API_URL;
 export default function ClientLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const isAdminPage = pathname?.startsWith("/admin");
@@ -31,16 +30,16 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
     const fetchInitialData = async () => {
       try {
         const [newsRes, departmentsRes, servicesRes] = await Promise.all([
-          fetch(`${API}/news`),
-          fetch(`${API}/departments`),
-          fetch(`${API}/services`),
+          fetch("/api/news"),
+          fetch("/api/departments"),
+          fetch("/api/services"),
         ]);
 
         if (newsRes.ok) setNews(await newsRes.json());
         if (departmentsRes.ok) setDepartments(await departmentsRes.json());
         if (servicesRes.ok) setServices(await servicesRes.json());
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Ошибка при загрузке данных:", error);
       }
     };
 

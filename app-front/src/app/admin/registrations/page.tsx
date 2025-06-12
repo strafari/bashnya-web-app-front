@@ -1,8 +1,7 @@
 "use client";
-const API = process.env.NEXT_PUBLIC_API_URL;
 
 import { useState, useEffect } from "react";
-
+const API = process.env.NEXT_PUBLIC_API_URL;
 type EventRegistration = {
   event_registration_id: number;
   event_registration_user_id: number;

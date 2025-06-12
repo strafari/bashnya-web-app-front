@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import ServiceItem from "@/components/ServiceItem";
-const API = process.env.NEXT_PUBLIC_API_URL;
 
 const Coworking = () => {
   // Mock service data for the coworking spaces

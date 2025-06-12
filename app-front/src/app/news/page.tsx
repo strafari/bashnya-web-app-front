@@ -1,5 +1,4 @@
 "use client";
-const API = process.env.NEXT_PUBLIC_API_URL;
 
 import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
@@ -9,7 +8,7 @@ import { motion } from "motion/react";
 import Image from "next/image";
 import { useInView } from "react-intersection-observer";
 import NewsCard from "@/components/NewsCard"; // Update the path
-
+const API = process.env.NEXT_PUBLIC_API_URL;
 export default function NewsPage() {
   const { news, setNews } = useStore();
   const [searchQuery, setSearchQuery] = useState("");
@@ -20,7 +19,7 @@ export default function NewsPage() {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch(`${API}/news/`)
+    fetch(`/api/news/`)
       .then((res) => {
         if (!res.ok) {
           throw new Error(`Error: ${res.statusText}`);
@@ -31,7 +30,7 @@ export default function NewsPage() {
         setNews(data);
       })
       .catch((err) => {
-        console.error("Failed to fetch news:", err);
+        console.error("Ошибка при загрузке новостей:", err);
       })
       .finally(() => setIsLoading(false));
   }, [setNews]);

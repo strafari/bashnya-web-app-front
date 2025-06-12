@@ -1,6 +1,6 @@
 // pages/admin/login.tsx
 "use client";
-const API = process.env.NEXT_PUBLIC_API_URL;
+
 import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -28,7 +28,6 @@ export default function AdminLogin() {
     try {
       const res = await fetch("/api/login", {
         method: "POST",
-        mode: "cors",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({ email, password }),

@@ -6,7 +6,6 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import DOMPurify from "dompurify";
 import { motion } from "motion/react";
 const API = process.env.NEXT_PUBLIC_API_URL;
-
 export default function NewsDetailPage() {
   const { newsId } = useParams();
   const { news, setNews } = useStore();

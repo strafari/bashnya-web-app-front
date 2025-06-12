@@ -1,10 +1,9 @@
 "use client";
-const API = process.env.NEXT_PUBLIC_API_URL;
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Modal from "@/components/EditModal"; // Ensure you have this Modal component
-
+const API = process.env.NEXT_PUBLIC_API_URL;
 type NewsItem = {
   news_id: number;
   news_photo: string;

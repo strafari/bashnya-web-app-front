@@ -1,10 +1,10 @@
 "use client";
-const API = process.env.NEXT_PUBLIC_API_URL;
+export const dynamic = 'force-dynamic';
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-
+const API = process.env.NEXT_PUBLIC_API_URL;
 export default function CreateCoworking() {
   const router = useRouter();
   const [formData, setFormData] = useState({
