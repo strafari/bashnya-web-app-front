@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API = process.env.NEXT_PUBLIC_API_URL;
 
 export async function GET(request: NextRequest) {
   try {
     const cookies = request.headers.get("cookie") || "";
-    const response = await fetch(`${API_URL}/htoya/`, {
+    const response = await fetch(`${API}/htoya/`, {
       method: "GET",
       headers: { "Cookie": cookies },
       credentials: "include",
