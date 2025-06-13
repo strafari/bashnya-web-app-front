@@ -7,7 +7,7 @@ export async function GET(request: Request) {
     const type = url.pathname.split('/').pop() ?? '';
 
     const baseUrl =
-      process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      process.env.NEXT_PUBLIC_API_URL;
 
     let endpoint: string;
     switch (type) {
