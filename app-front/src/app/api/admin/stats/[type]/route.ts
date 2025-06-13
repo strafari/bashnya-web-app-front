@@ -1,13 +1,12 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';            // если хочешь axios, иначе убери
-
+const API = process.env.NEXT_PUBLIC_API_URL;
 export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
     const type = url.pathname.split('/').pop() ?? '';
 
-    const baseUrl =
-      process.env.NEXT_PUBLIC_API_URL;
+
 
     let endpoint: string;
     switch (type) {
@@ -25,7 +24,7 @@ export async function GET(request: Request) {
     }
 
     // вариант с axios
-    const { data } = await axios.get(`${baseUrl}${endpoint}`);
+    const { data } = await axios.get(`${API}${endpoint}`);
     // вариант с fetch (на выбор)
     // const res = await fetch(`${baseUrl}${endpoint}`);
     // const data = await res.json();
