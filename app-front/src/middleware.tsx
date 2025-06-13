@@ -1,31 +1,38 @@
-import { NextResponse, NextRequest } from 'next/server';
+import { NextResponse, NextRequest } from "next/server";
+
+const API = process.env.NEXT_PUBLIC_API_URL; // убедись, что оно определено
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // пропускаем API‑роуты
-  if (pathname.startsWith('/api')) return NextResponse.next();
+  if (pathname.startsWith("/api")) {
+    return NextResponse.next();
+  }
 
-  // защищённые страницы
-  if (pathname.startsWith('/profile') || pathname.startsWith('/admin')) {
-    // относительный путь → запрос не выходит наружу, TLS не нужен
-    const res = await fetch('/api/check-auth', {
-      headers: { cookie: req.headers.get('cookie') ?? '' },
+  if (pathname.startsWith("/profile") || pathname.startsWith("/admin")) {
+    // 🔥 важно: НЕ использовать req.nextUrl.origin
+    const response = await fetch(`${API}/api/check-auth`, {
+      headers: {
+        Cookie: req.headers.get("cookie") || "",
+      },
     });
 
-    if (!res.ok) {
+    if (!response.ok) {
       const url = req.nextUrl.clone();
-      url.pathname = pathname.startsWith('/admin') ? '/admin/login' : '/';
-      if (!pathname.startsWith('/admin')) url.searchParams.set('requireAuth', 'true');
+      if (pathname.startsWith("/admin")) {
+        url.pathname = "/admin/login";
+      } else {
+        url.pathname = "/";
+        url.searchParams.set("requireAuth", "true");
+      }
       return NextResponse.redirect(url);
     }
 
-    // проверка прав админа
-    if (pathname.startsWith('/admin')) {
-      const { user } = await res.json();
-      if (!user?.is_superuser) {
+    if (pathname.startsWith("/admin")) {
+      const data = await response.json();
+      if (!data.user.is_superuser) {
         const url = req.nextUrl.clone();
-        url.pathname = '/admin/login';
+        url.pathname = "/admin/login";
         return NextResponse.redirect(url);
       }
     }
@@ -34,4 +41,6 @@ export async function middleware(req: NextRequest) {
   return NextResponse.next();
 }
 
-export const config = { matcher: ['/admin/:path*', '/profile'] };
+export const config = {
+  matcher: ["/admin/:path*", "/profile"],
+};
