@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API = process.env.NEXT_PUBLIC_API_URL;
 
 export default async function handler(
   req: NextApiRequest,
@@ -15,7 +15,7 @@ export default async function handler(
     const cookies = req.headers.cookie || "";
 
     // Отправляем запрос к бэкенду FastAPI
-    const response = await fetch(`${API_URL}/htoya/`, {
+    const response = await fetch(`${API}/htoya/`, {
       method: "GET",
       headers: {
         "Cookie": cookies, // Передаем куки от клиента
