@@ -11,7 +11,7 @@ export async function middleware(req: NextRequest) {
 
   // Защищенные маршруты
   if (pathname.startsWith("/profile") || pathname.startsWith("/admin")) {
-    const response = await fetch(`${req.nextUrl.origin}/api/check-auth`, {
+    const response = await fetch(`${API}/api/check-auth`, {
       headers: {
         Cookie: req.headers.get("cookie") || "",
       },
