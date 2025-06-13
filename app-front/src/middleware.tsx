@@ -1,20 +1,18 @@
 import { NextResponse, NextRequest } from "next/server";
-
-const API = process.env.NEXT_PUBLIC_API_URL; // убедись, что оно определено
+const API = process.env.NEXT_PUBLIC_API_URL;
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  if (pathname.startsWith("/api")) {
-    return NextResponse.next();
-  }
+  if (pathname.startsWith("/api")) return NextResponse.next();
 
   if (pathname.startsWith("/profile") || pathname.startsWith("/admin")) {
-    // 🔥 важно: НЕ использовать req.nextUrl.origin
-    const response = await fetch(`${API}/api/check-auth`, {
+    const response = await fetch(`${API}/htoya/`, {
       headers: {
         Cookie: req.headers.get("cookie") || "",
       },
+      credentials: "include",
+      cache: "no-store",
     });
 
     if (!response.ok) {
@@ -28,13 +26,12 @@ export async function middleware(req: NextRequest) {
       return NextResponse.redirect(url);
     }
 
-    if (pathname.startsWith("/admin")) {
-      const data = await response.json();
-      if (!data.user.is_superuser) {
-        const url = req.nextUrl.clone();
-        url.pathname = "/admin/login";
-        return NextResponse.redirect(url);
-      }
+    // Проверка прав администратора
+    const data = await response.json();
+    if (pathname.startsWith("/admin") && !data.is_superuser) {
+      const url = req.nextUrl.clone();
+      url.pathname = "/admin/login";
+      return NextResponse.redirect(url);
     }
   }
 
