@@ -1,15 +1,15 @@
 import { NextResponse } from 'next/server';
-import axios from 'axios';
+import axios from 'axios';            // если хочешь axios, иначе убери
 
-export async function GET(
-  request: Request,
-  { params }: { params: { type: string } }
-) {
+export async function GET(request: Request) {
   try {
-    const type = params.type;
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+    const url = new URL(request.url);
+    const type = url.pathname.split('/').pop() ?? '';
 
-    let endpoint = '';
+    const baseUrl =
+      process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
+    let endpoint: string;
     switch (type) {
       case 'registrations':
         endpoint = '/api/admin/stats/registrations';
@@ -24,8 +24,13 @@ export async function GET(
         );
     }
 
-    const response = await axios.get(`${baseUrl}${endpoint}`);
-    return NextResponse.json(response.data);
+    // вариант с axios
+    const { data } = await axios.get(`${baseUrl}${endpoint}`);
+    // вариант с fetch (на выбор)
+    // const res = await fetch(`${baseUrl}${endpoint}`);
+    // const data = await res.json();
+
+    return NextResponse.json(data);
   } catch (error) {
     console.error('Error fetching statistics:', error);
     return NextResponse.json(
@@ -33,4 +38,4 @@ export async function GET(
       { status: 500 }
     );
   }
-} 
+}
