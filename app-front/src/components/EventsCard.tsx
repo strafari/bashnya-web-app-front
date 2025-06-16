@@ -58,7 +58,7 @@ const EventsCard: React.FC<EventsCardProps> = ({ event, onClick }) => {
           <div>
             {event.event_price && (
               <p className="font-[700] md:text-[28px] text-[16px] ">
-                от {event.event_price} ₽
+                {/* от*/ `${event.event_price}` /*₽ */}
               </p>
             )}
           </div>
