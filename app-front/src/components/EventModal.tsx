@@ -81,8 +81,8 @@ const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, event, hideBuy
   };
 
   const formatPrice = (price: string) => {
-    if (/\d/.test(price) && !price.includes("₽")) {
-      return `${price} ₽`;
+    if (/\d/.test(price) /*&& !price.includes("₽")*/) {
+      return `${price} `;
     }
     return price;
   };
