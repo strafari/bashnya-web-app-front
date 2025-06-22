@@ -103,7 +103,7 @@ const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, event, hideBuy
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
           className="bg-[#303030] mx-[6px] md:px-10 px-4 md:py-12 py-6 md:rounded-[40px] rounded-[16px] shadow-lg w-full max-w-[600px] 
-             overflow-y-auto max-h-[80vh]
+             overflow-y-auto max-h-[100vh]
              [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-[#303030] [&::-webkit-scrollbar-thumb]:bg-[#FF4392] [&::-webkit-scrollbar-thumb]:rounded-full"
 >
 
